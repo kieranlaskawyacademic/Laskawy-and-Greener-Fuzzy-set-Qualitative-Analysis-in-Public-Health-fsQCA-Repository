@@ -1,0 +1,1248 @@
+---
+title: "3 cities script"
+output: html_document
+---
+
+```{r}
+data = read.csv("expanded_data.csv")
+```
+
+Full data is as follows:
+
+Geography	Data_Zone	Code	2011 Data Zone
+	Intermediate_Zone	Name	2011 Intermediate Zone name
+	Council_area	Name	Council area name
+
+Population	
+Total_population	Count	2017 NRS small area population estimates
+	Working_age_population	Count	based on 2017 NRS small area population estimate and state pension age
+
+Income
+Income_rate	Percentage	Percentage of people who are income deprived
+	Income_count	Count	Number of people who are income deprived
+
+Employment
+Employment_rate	Percentage	Percentage of people who are employment deprived
+	Employment_count	Count	Number of people who are employment deprived
+
+Health
+CIF	Standardised ratio	Comparative Illness Factor: standardised ratio
+	ALCOHOL	Standardised ratio	Hospital stays related to alcohol misuse: standardised ratio
+	DRUG	Standardised ratio	Hospital stays related to drug misuse: standardised ratio 
+	SMR	Standardised ratio	Standardised mortality ratio
+	DEPRESS	Percentage	Proportion of population being prescribed drugs for anxiety, depression or psychosis
+	LBWT	Percentage	Proportion of live singleton births of low birth weight
+	EMERG	Standardised ratio	Emergency stays in hospital: standardised ratio
+Education, Skills and Training
+Attendance	Percentage	School pupil attendance 
+	Attainment	Score	Attainment of school leavers 
+	no_qualifications	Standardised ratio	Working age people with no qualifications: standardised ratio 
+	not_participating	Percentage	Proportion of people aged 16-19 not participating in education, employment or training
+	
+Geographic Access to Services
+drive_GP	Time (minutes)	Average drive time to a GP surgery in minutes
+	PT_GP	Time (minutes)	Public transport travel time to a GP surgery in minutes
+
+Crime
+crime_count	Count	Number of recorded crimes of violence, sexual offences, domestic housebreaking, vandalism, drugs offences, and common assault
+	crime_rate	Rate per 10,000 population	Recorded crimes of violence, sexual offences, domestic housebreaking, vandalism, drugs offences, and common assault per 10,000 people
+
+Housing
+overcrowded_count	Count	Number of people in households that are overcrowded 
+	nocentralheat_count	Count	Number of people in households without central heating
+	overcrowded_rate	Percentage	Percentage of people in households that are overcrowded 
+	nocentralheat_rate	Percentage	Percentage of people in households without central heating
+
+
+that's going to need some tidying - quite a lot of columns are in the wrong format
+* looks like it is the missing values row
+
+DEPRESS is a percentage which is a chr
+LBWT is a percentage which is currently a chr
+ATTENDANCE is a % which is currenlty a chr
+ATTAINMENT is a float which is currently a chr
+crime_count is a float which is currently a chr
+crime_rate is an integer which is currenlty a chr
+
+
+
+```{r}
+aberdeen_rows = which(data$Council_area == "Aberdeen City")
+glasgow_rows = which(data$Council_area == "Glasgow City")
+dundee_rows = which(data$Council_area == "Dundee City")
+```
+
+
+
+```{r}
+aberdeen_data = data[aberdeen_rows,]
+glasgow_data = data[glasgow_rows,]
+dundee_data = data[dundee_rows,]
+```
+
+
+
+```{r}
+saveRDS(aberdeen_data, file="aberdeen_data")
+saveRDS(glasgow_data, file="glasgow_data")
+saveRDS(dundee_data, file="dundee_data")
+```
+
+
+```{r}
+aberdeen_data = readRDS("aberdeen_data")
+dundee_data = readRDS("Dundee_data")
+glasgow_data = readRDS("glasgow_data")
+```
+
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+aberdeen_data_sum <- aberdeen_data %>%
+    group_by (Intermediate_Zone) %>%
+    summarise(mean_population = mean(Total_population, na.rm = TRUE), mean_working_population = mean(Working_Age_population, na.rm = TRUE), standard_working_population = mean_working_population/mean_population, mean_income_count = mean(income_count, na.rm = TRUE), standard_income_dep = mean_income_count/mean_population, mean_employment_count = mean(employment_count, na.rm = TRUE), standard_employment_dep = mean_employment_count/mean_working_population, mean_cif = mean(CIF, na.rm = TRUE), mean_alcohol = mean(ALCOHOL, na.rm = TRUE), mean_drug = mean(DRUG, na.rm = TRUE), mean_smr = mean(SMR, na.rm = TRUE), mean_depress = mean(DEPRESS_PERC, na.rm = TRUE), mean_lbwt = mean(LBWT_PERC, na.rm = TRUE), mean_emerg = mean(EMERG, na.rm = TRUE), mean_attendance = mean(Attendance_clean, na.rm = TRUE), mean_attainment = mean(Attainment_clean, na.rm = TRUE), mean_no_quals = mean(no_qualifications, na.rm = TRUE), mean_crime_count = mean(crime_count_clean, na.rm = TRUE), standard_crime_count = mean_crime_count/mean_population, mean_crime_rate = mean(crime_rate_clean, na.rm = TRUE), mean_overcrowded_count = mean(overcrowded_count, na.rm = TRUE), standard_overcrowded = mean_overcrowded_count/mean_population, mean_no_central_heating_count = mean(nocentralheating_count, na.rm = TRUE), standard_no_central_heating = mean_no_central_heating_count/mean_population, mean_drive_gp = mean(drive_GP, na.rm = TRUE), mean_pt_gp = mean(PT_GP, na.rm = TRUE))
+
+
+           
+  
+```
+
+```{r}
+aberdeen_data_sum$city = "Aberdeen"
+
+```
+
+
+
+```{r}
+dundee_data_sum <- dundee_data %>%
+    group_by (Intermediate_Zone) %>%
+    summarise(mean_population = mean(Total_population, na.rm = TRUE), mean_working_population = mean(Working_Age_population, na.rm = TRUE), standard_working_population = mean_working_population/mean_population, mean_income_count = mean(income_count, na.rm = TRUE), standard_income_dep = mean_income_count/mean_population, mean_employment_count = mean(employment_count, na.rm = TRUE), standard_employment_dep = mean_employment_count/mean_working_population, mean_cif = mean(CIF, na.rm = TRUE), mean_alcohol = mean(ALCOHOL, na.rm = TRUE), mean_drug = mean(DRUG, na.rm = TRUE), mean_smr = mean(SMR, na.rm = TRUE), mean_depress = mean(DEPRESS_PERC, na.rm = TRUE), mean_lbwt = mean(LBWT_PERC, na.rm = TRUE), mean_emerg = mean(EMERG, na.rm = TRUE), mean_attendance = mean(Attendance_clean, na.rm = TRUE), mean_attainment = mean(Attainment_clean, na.rm = TRUE), mean_no_quals = mean(no_qualifications, na.rm = TRUE), mean_crime_count = mean(crime_count_clean, na.rm = TRUE), standard_crime_count = mean_crime_count/mean_population, mean_crime_rate = mean(crime_rate_clean, na.rm = TRUE), mean_overcrowded_count = mean(overcrowded_count, na.rm = TRUE), standard_overcrowded = mean_overcrowded_count/mean_population, mean_no_central_heating_count = mean(nocentralheating_count, na.rm = TRUE), standard_no_central_heating = mean_no_central_heating_count/mean_population, mean_drive_gp = mean(drive_GP, na.rm = TRUE), mean_pt_gp = mean(PT_GP, na.rm = TRUE))
+
+
+
+```
+
+```{r}
+dundee_data_sum$city = "Dundee"
+```
+
+
+```{r}
+glasgow_data_sum <- glasgow_data %>%
+    group_by (Intermediate_Zone) %>%
+    summarise(mean_population = mean(Total_population, na.rm = TRUE), mean_working_population = mean(Working_Age_population, na.rm = TRUE), standard_working_population = mean_working_population/mean_population, mean_income_count = mean(income_count, na.rm = TRUE), standard_income_dep = mean_income_count/mean_population, mean_employment_count = mean(employment_count, na.rm = TRUE), standard_employment_dep = mean_employment_count/mean_working_population, mean_cif = mean(CIF, na.rm = TRUE), mean_alcohol = mean(ALCOHOL, na.rm = TRUE), mean_drug = mean(DRUG, na.rm = TRUE), mean_smr = mean(SMR, na.rm = TRUE), mean_depress = mean(DEPRESS_PERC, na.rm = TRUE), mean_lbwt = mean(LBWT_PERC, na.rm = TRUE), mean_emerg = mean(EMERG, na.rm = TRUE), mean_attendance = mean(Attendance_clean, na.rm = TRUE), mean_attainment = mean(Attainment_clean, na.rm = TRUE), mean_no_quals = mean(no_qualifications, na.rm = TRUE), mean_crime_count = mean(crime_count_clean, na.rm = TRUE), standard_crime_count = mean_crime_count/mean_population, mean_crime_rate = mean(crime_rate_clean, na.rm = TRUE), mean_overcrowded_count = mean(overcrowded_count, na.rm = TRUE), standard_overcrowded = mean_overcrowded_count/mean_population, mean_no_central_heating_count = mean(nocentralheating_count, na.rm = TRUE), standard_no_central_heating = mean_no_central_heating_count/mean_population, mean_drive_gp = mean(drive_GP, na.rm = TRUE), mean_pt_gp = mean(PT_GP, na.rm = TRUE))
+
+```
+
+```{r}
+glasgow_data_sum$city = "Glasgow"
+```
+
+
+combine the three
+
+```{r}
+combined = rbind(aberdeen_data_sum, dundee_data_sum, glasgow_data_sum)
+```
+
+Hmm. How does that look on a plot?
+
+```{r}
+library(QCA)
+
+```
+
+```{r}
+health_differences$pch = 0
+```
+
+
+```{r}
+dundee = which(combined$city == "Dundee")
+glasgow = which(combined$city == "Glasgow")
+health_differences$pch[dundee] = 1
+health_differences$pch[glasgow] = 17
+
+```
+
+
+
+
+```{r}
+Xplot(health_differences$health_z_score, jitter = T, pch=health_differences$pch)
+```
+
+Aberdeen is square, Dundee is circle, Glasgow is black triangle
+
+So Glasgow has a preponderance of worst (higher) results, with Aberdeen doing best in terms of numbers of strong intermediate zones at or around -1. Dundee seems more thinly distributed.
+
+Okay, so that means we need to calculate the means for the two cities and use them across the three.
+
+
+```{r}
+crime_out_means = apply(crime_outcomes_2, 2, mean)
+crime_out_sds = apply(crime_outcomes_2, 2, sd)
+crime_outcomes_norm = scale(crime_outcomes, center = crime_out_means, scale = crime_out_sds)
+
+crime_outcomes_zscores = as.data.frame(rowMeans(crime_outcomes_norm))
+
+crime_outcomes_zscores$intermediate_zone = combined$Intermediate_Zone
+colnames(crime_outcomes_zscores) = c("crime_z_score", "intermediate_zone")
+```
+
+
+
+Let's also standardise the causal factors by grouping
+
+Work and employment
+	Working_age_population	Count	based on 2017 NRS small area population estimate and state pension age
+  Employment_rate	Percentage	Percentage of people who are employment deprived
+
+Education and training
+  Attendance	Percentage	School pupil attendance 
+	Attainment	Score	Attainment of school leavers 
+	no_qualifications	Standardised ratio	Working age people with no qualifications: standardised ratio 
+
+Income
+  Income_rate	Percentage	Percentage of people who are income deprived
+
+Housing
+  overcrowded_count	Count	Number of people in households that are overcrowded 
+	nocentralheat_count	Count	Number of people in households without central heating
+	overcrowded_rate	Percentage	Percentage of people in households that are overcrowded 
+	nocentralheat_rate	Percentage	Percentage of people in households without central heating
+
+Access to services
+  drive_GP	Time (minutes)	Average drive time to a GP surgery in minutes
+	PT_GP	Time (minutes)	Public transport travel time to a GP surgery in minutes
+
+Crime
+	crime_rate	Rate per 10,000 population	Recorded crimes of violence, sexual offences, domestic housebreaking, vandalism, drugs offences, and common assault per 10,000 people
+
+
+And for health outcomes (which we've already done)
+  CIF	Standardised ratio	Comparative Illness Factor: standardised ratio
+	ALCOHOL	Standardised ratio	Hospital stays related to alcohol misuse: standardised ratio
+	DRUG	Standardised ratio	Hospital stays related to drug misuse: standardised ratio 
+	SMR	Standardised ratio	Standardised mortality ratio
+	DEPRESS	Percentage	Proportion of population being prescribed drugs for anxiety, depression or psychosis
+	LBWT	Percentage	Proportion of live singleton births of low birth weight
+	EMERG	Standardised ratio	Emergency stays in hospital: standardised ratio
+
+
+
+
+```{r}
+work_means = mean(combined_2$standard_working_population)
+work_sds = sd(combined_2$standard_working_population)
+work_scaled = scale(combined$standard_working_population, center = work_means, scale = work_sds)
+work_scaled = -1*work_scaled
+
+emp_dep_means = mean(combined_2$standard_employment_dep)
+emp_dep_sds = mean(combined_2$standard_employment_dep)
+emp_dep_scaled = scale(combined$standard_employment_dep, center = emp_dep_means, scale = emp_dep_sds)
+
+combined_emp = cbind(work_scaled, emp_dep_scaled)
+
+combined_work_z = rowSums(combined_emp)
+
+```
+
+
+Education and training
+  Attendance	Percentage	School pupil attendance 
+	Attainment	Score	Attainment of school leavers 
+	no_qualifications	Standardised ratio	Working age people with no qualifications: standardised ratio 
+
+
+
+```{r}
+educ_train = combined_2[,c("mean_attainment", "mean_attendance", "mean_no_quals")]
+```
+
+
+So there are three factors here and standardisation for first and second need to be reversed for sets to be 'bads'
+
+```{r}
+attain_means = mean(combined_2$mean_attainment)
+attain_sds = sd(combined_2$mean_attainment)
+attain_scaled = scale(combined$mean_attainment, center = attain_means, scale = attain_sds)
+
+attain_scaled = attain_scaled * -1
+
+attend_means = mean(combined_2$mean_attendance)
+attend_sds = sd(combined_2$mean_attendance)
+attend_scaled = scale(combined$mean_attendance, center = attend_means, scale = attend_means)
+
+attend_scaled = attend_scaled * -1
+
+noqual_means = mean(combined_2$mean_no_quals)
+noqual_sd = sd(combined_2$mean_no_quals)
+noqual_scaled = scale(combined$mean_no_quals, center=noqual_means, scale = noqual_sd)
+
+educ_train_scaled = cbind(attain_scaled, attend_scaled, noqual_scaled)
+
+educ_train_z = rowMeans(educ_train_scaled)
+```
+
+Income is one row only
+
+Income
+  Income_rate	Percentage	Percentage of people who are income deprived
+
+
+```{r}
+income_mean = mean(combined_2$standard_income_dep)
+income_sd = sd(combined_2$standard_income_dep)
+income_scaled = scale(combined$standard_income_dep, center = income_mean, scale = income_sd)
+
+income_z = income_scaled
+
+```
+
+Housing
+	overcrowded_rate	Percentage	Percentage of people in households that are overcrowded 
+	nocentralheat_rate	Percentage	Percentage of people in households without central heating
+
+```{r}
+aberdeen_housing = cbind(combined[, c("standard_no_central_heating", "standard_overcrowded")])
+```
+
+```{r}
+no_central_mean = mean(combined_2$standard_no_central_heating)
+no_central_sd = sd(combined_2$standard_no_central_heating)
+no_central_standard = scale(combined$standard_no_central_heating)
+
+overcrowd_mean = mean(combined_2$standard_overcrowded)
+overcrowd_sd = sd(combined_2$standard_overcrowded)
+overcrowd_scale = scale(combined$standard_overcrowded, center = overcrowd_mean, scale = overcrowd_sd)
+
+housing_scaled = cbind(no_central_standard, overcrowd_scale)
+
+housing_z = rowMeans(housing_scaled)
+
+```
+
+Access
+
+Access to services
+  drive_GP	Time (minutes)	Average drive time to a GP surgery in minutes
+	PT_GP	Time (minutes)	Public transport travel time to a GP surgery in minutes
+
+
+```{r}
+access = cbind(combined[, c("mean_drive_gp", "mean_pt_gp")])
+
+mean_drive_gp = mean(combined_2$mean_drive_gp)
+sd_drive_gp = sd(combined_2$mean_drive_gp)
+scale_drive_gp = scale(combined$mean_drive_gp, center = mean_drive_gp, scale = sd_drive_gp)
+
+mean_pt_drive_gp = mean(combined_2$mean_pt_gp)
+sd_pt_drive_gp = sd(combined_2$mean_pt_gp)
+scale_pt_drive_gp = scale(combined$mean_pt_gp, center = mean_pt_drive_gp, scale = sd_pt_drive_gp)
+
+access_scale = cbind(scale_drive_gp, scale_pt_drive_gp)
+
+access_z = rowMeans(access_scale)
+
+
+```
+
+
+I've already done crime and health
+
+```{r}
+health_determinants = as.data.frame(cbind(combined_work_z, educ_train_z, income_z, housing_z, access_z, crime_outcomes_zscores[,1], health_outcomes_zscores_2[,1]))
+```
+
+
+```{r}
+
+colnames(health_determinants) = c("work", "educ_train", "income", "housing", "access", "crime", "health")
+```
+
+
+```{r}
+health_determinants$city = combined$city
+health_determinants$intermediate_zone = combined$Intermediate_Zone
+```
+
+
+```{r}
+saveRDS(health_determinants, "aberdeen_and_dundee_and_glasgow_combined")
+```
+
+
+```{r}
+combined = as.data.frame(readRDS("aberdeen_and_dundee_combined"))
+```
+
+```{r}
+library(QCA)
+
+```
+
+```{r}
+combined$pch = 0
+```
+
+
+```{r}
+dundee = which(combined$city == "Dundee")
+combined$pch[dundee] = 1
+
+```
+
+```{r}
+combined$pch[combined$pch==1] = 17
+
+Xplot(combined$health, jitter = T, pch=combined$pch)
+```
+
+Aberdeen is square, Dundee is circle
+
+So Dundee has extremes, Aberdeen more in middle with bias to the left
+
+
+-1.3, 0, 1.4?
+
+```{r}
+findTh(combined$health, n=3)
+```
+```{r}
+calibrate(combined$health, thresholds = "e=-1.2, c=-0.15, i=1.5")
+combined$health_cal = calibrate(combined$health, thresholds = "e=-1.2, c=-0.15, i=1.5")
+```
+
+
+
+
+```{r}
+Xplot(combined$work, jitter = T, pch=combined$pch)
+```
+So Aberdeen has slightly distribution of higher work deprivation than Dundee
+
+```{r}
+findTh(combined$work, n=3)
+```
+```{r}
+calibrate(combined$work, thresholds = "e=-1.5, c=0.38, i=2")
+combined$work_cal = calibrate(combined$work, thresholds = "e=-1.5, c=0.38, i=2")
+```
+
+That's seems reasonably balanced and sensible
+
+```{r}
+Xplot(combined$educ_train, jitter = T, pch=combined$pch)
+```
+
+That seems generally balanced between the two cities with zero in the middle
+
+-1.2, 0, 1.2?
+
+```{r}
+findTh(combined$educ_train, n=3)
+```
+```{r}
+calibrate(combined$educ_train, thresholds = "e=-1.2, c=00, e=1.2")
+combined$educ_train_cal = calibrate(combined$educ_train, thresholds = "e=-1.2, c=00, e=1.2")
+```
+That again seems sensibly balanced
+
+```{r}
+Xplot(combined$income, jitter = T, pch=combined$pch)
+```
+
+Dundee appears to have lower numbers of income deprived
+
+-1, 0.4, 1.8?
+
+```{r}
+findTh(combined$income, n=3)
+```
+
+```{r}
+calibrate(combined$income, thresholds = "e=-1, c=0.3, i=1.6")
+combined$income_cal = calibrate(combined$income, thresholds = "e=-1, c=0.3, i=1.6")
+```
+
+```{r}
+Xplot(combined$housing, , jitter = T, pch=combined$pch)
+
+```
+
+Dundee skewed to left again
+
+-1.5, 0, 1.3?
+
+```{r}
+findTh(combined$housing, n=3)
+```
+0.5 would produce very skewed set
+
+
+```{r}
+Xplot(combined$housing, pch=combined$pch)
+```
+
+0.15 or so seems to be sensible crossover as well
+
+```{r}
+calibrate(combined$housing, thresholds = "e=-1.4, c=0.15, e=1.6")
+combined$housing_cal = calibrate(combined$housing, thresholds = "e=-1.4, c=0.15, e=1.6")
+```
+Produces set skewed towards lower, but that's not necessarily a bad thing in terms of the underlying situation
+
+```{r}
+Xplot(combined$access, jitter = T, pch=combined$pch)
+```
+
+Seems reasonably balanced. 
+-1.3, 0, 1.5?
+
+```{r}
+findTh(combined$access, n=3)
+```
+Would produce very right skew. Can't really do that.
+
+```{r}
+Xplot(combined$access, pch=combined$pch)
+```
+
+There are gaps either side of 0 here.
+
+```{r}
+calibrate(combined$access, thresholds = "e=-1.5, c=0, i=1.3")
+combined$access_cal = calibrate(combined$access, thresholds = "e=-1.5, c=0, i=1.3")
+```
+still skewed to lower (better) access, but not necessarily a problem as will highlight difficult areas
+
+```{r}
+Xplot(combined$crime, jitter = T, pch=combined$pch)
+```
+
+Produces very skewed. Have to remove > 2
+
+```{r}
+high_crime = which(combined$crime > 2)
+crime = combined$crime[-high_crime]
+Xplot(crime, jitter = T, pch=combined$pch)
+```
+
+Extremes are Dundee (as in chart below, which is interesting)
+
+-1, 0, 1?
+
+```{r}
+findTh(crime, n=3)
+findTh(combined$crime, n=3)
+```
+
+```{r}
+Xplot(crime, pch=combined$pch)
+```
+
+definite gap around zero
+
+```{r}
+calibrate(combined$crime, thresholds = "e=-.9, c=0, i=1")
+combined$crime_cal = calibrate(combined$crime, thresholds = "e=-.9, c=0, i=1")
+```
+
+That seems to be all. Make new object
+
+```{r}
+calibrated = combined[c("city", "intermediate_zone", "work_cal", "educ_train_cal", "income_cal", "health_cal", "housing_cal", "access_cal", "crime_cal", "pch")]
+```
+
+```{r}
+saveRDS(calibrated, "aberdeen_and_dundee_calibrated")
+```
+
+
+```{r}
+combined = as.data.frame(readRDS("aberdeen_and_dundee_and_glasgow_combined"))
+```
+
+```{r}
+library(QCA)
+
+```
+
+```{r}
+combined$pch = 0
+```
+
+
+```{r}
+dundee = which(combined$city == "Dundee")
+combined$pch[dundee] = 1
+glasgow = which(combined$city == "Glasgow")
+combined$pch[glasgow] = 17
+
+```
+
+```{r}
+Xplot(combined$health, jitter = T, pch=combined$pch)
+```
+
+Aberdeen is square, Dundee is circle, Glasgow is filled triangle
+
+So Dundee has the single lowest scoring intermediate zone, but Aberdeen and Glasgow have the greater number of intermediate zones below 0 (so having better health). Glasgow clearly has the highest number of poor health areas (above 2) with Dundee also having a cluster of scores around 1.5. This data is based on the Dundee and Aberdeen calibration, although the wider distribution doesn't change much (at least in terms of shape) if we use all three. However, it does change the actual z-scores moving them to the left.
+
+I now calibrate the scores according to the settings derived from the Aberdeen and Dundee data, so the diagnostics give an indication of what the three city calibration would look like (which wouldn't make sense as means and SDs came from Aberdeen and Dundee only). 
+
+
+```{r}
+findTh(combined$health, n=3)
+```
+```{r}
+calibrate(combined$health, thresholds = "e=-1.2, c=-0.15, i=1.5")
+combined$health_cal = calibrate(combined$health, thresholds = "e=-1.2, c=-0.15, i=1.5")
+```
+
+
+
+
+```{r}
+Xplot(combined$work, jitter = T, pch=combined$pch)
+```
+Glasgow dominates 0-2 range. Aberdeen appears strongest (squares)
+
+```{r}
+findTh(combined$work, n=3)
+```
+```{r}
+calibrate(combined$work, thresholds = "e=-1.5, c=0.38, i=2")
+combined$work_cal = calibrate(combined$work, thresholds = "e=-1.5, c=0.38, i=2")
+```
+
+That's seems reasonably balanced and sensible
+
+```{r}
+Xplot(combined$educ_train, jitter = T, pch=combined$pch)
+```
+
+Glasgow again has most to right
+
+```{r}
+findTh(combined$educ_train, n=3)
+```
+```{r}
+calibrate(combined$educ_train, thresholds = "e=-1.2, c=00, e=1.2")
+combined$educ_train_cal = calibrate(combined$educ_train, thresholds = "e=-1.2, c=00, e=1.2")
+```
+That again seems sensibly balanced
+
+```{r}
+Xplot(combined$income, jitter = T, pch=combined$pch)
+```
+
+That appears more evently distributed. More Aberdeen to left though.
+
+
+```{r}
+findTh(combined$income, n=3)
+```
+
+```{r}
+calibrate(combined$income, thresholds = "e=-1, c=0.3, i=1.6")
+combined$income_cal = calibrate(combined$income, thresholds = "e=-1, c=0.3, i=1.6")
+```
+
+```{r}
+Xplot(combined$housing, , jitter = T, pch=combined$pch)
+
+```
+
+Glasgow has extreme, extreme outliner
+
+```{r}
+findTh(combined$housing, n=3)
+```
+0.5 would produce very skewed set
+
+
+```{r}
+Xplot(combined$housing, pch=combined$pch)
+```
+
+0.15 or so seems to be sensible crossover as well
+
+```{r}
+calibrate(combined$housing, thresholds = "e=-1.4, c=0.15, e=1.6")
+combined$housing_cal = calibrate(combined$housing, thresholds = "e=-1.4, c=0.15, e=1.6")
+```
+Produces set skewed towards lower, but that's not necessarily a bad thing in terms of the underlying situation
+
+```{r}
+Xplot(combined$access, jitter = T, pch=combined$pch)
+```
+
+Glasgow has pretty good access!
+
+```{r}
+findTh(combined$access, n=3)
+```
+Would produce very right skew. Can't really do that.
+
+```{r}
+Xplot(combined$access, pch=combined$pch)
+```
+
+There are gaps either side of 0 here.
+
+```{r}
+calibrate(combined$access, thresholds = "e=-1.5, c=0, i=1.3")
+combined$access_cal = calibrate(combined$access, thresholds = "e=-1.5, c=0, i=1.3")
+```
+still skewed to lower (better) access, but not necessarily a problem as will highlight difficult areas
+
+```{r}
+Xplot(combined$crime, jitter = T, pch=combined$pch)
+```
+
+Glasgow has extreme outlier again, and Aberdeen a couple too!
+
+```{r}
+high_crime = which(combined$crime > 2)
+crime = combined$crime[-high_crime]
+Xplot(crime, jitter = T, pch=combined$pch)
+```
+
+Extremes are Dundee (as in chart below, which is interesting)
+
+-1, 0, 1?
+
+```{r}
+findTh(crime, n=3)
+findTh(combined$crime, n=3)
+```
+
+```{r}
+Xplot(crime, pch=combined$pch)
+```
+
+definite gap around zero
+
+```{r}
+calibrate(combined$crime, thresholds = "e=-.9, c=0, i=1")
+combined$crime_cal = calibrate(combined$crime, thresholds = "e=-.9, c=0, i=1")
+```
+
+That seems to be all. Make new object
+
+```{r}
+calibrated = combined[c("city", "intermediate_zone", "work_cal", "educ_train_cal", "income_cal", "health_cal", "housing_cal", "access_cal", "crime_cal", "pch")]
+```
+
+```{r}
+saveRDS(calibrated, "aberdeen_and_dundee_and_glasgow_calibrated")
+```
+
+
+
+```{r}
+library(QCA)
+health = readRDS("aberdeen_and_dundee_and_glasgow_calibrated")
+```
+
+
+
+```{r}
+nhealth <- superSubset(health, outcome = "health_cal", conditions = "work_cal, income_cal, access_cal, educ_train_cal, crime_cal, housing_cal", incl.cut=0.9, ron.cut = 0.6)
+nhealth
+```
+
+educ_train_cal is outstanding in terms of relevance
+income_cal + crime_cal also very strong in terms of consistency and relevance
+income_cal +housing_cal is also very strong
+as is
+work_cal + housing_cal
+
+That's a lot of conditions!
+
+so that's educ_train_cal + income_cal + crime_cal + work_cal + housing_cal
+
+So reverse is ~educ_train_cal * ~income_cal * ~crime_cal * ~work_cal * ~housing_cal
+
+
+Aberdeen is 1-49
+Dundee is 50-80
+Glasgow is 81-216 - so much, much bigger
+
+```{r}
+tthealth <- truthTable(health, outcome = "health_cal", conditions = "work_cal, income_cal, access_cal, educ_train_cal, crime_cal, housing_cal", incl.cut = 0.8, show.cases = T)
+tthealth
+```
+pri cut needed here
+
+
+```{r}
+CSAhealth = findRows(expression="~educ_train_cal * ~income_cal * ~crime_cal * ~work_cal * ~housing_cal", obj=tthealth, type=c(1,2))
+CSAhealth
+```
+create tt without csas
+
+```{r}
+tthealth_csa <- truthTable(health, outcome = "health_cal", conditions = "work_cal, income_cal, access_cal, educ_train_cal, crime_cal, housing_cal", incl.cut = 0.8, show.cases = T, exclude = CSAhealth)
+tthealth_csa
+
+```
+
+Need to cut lower number cases here. Try 3 (which exclude 1 and 2)
+
+```{r}
+tthealth_csa <- truthTable(health, outcome = "health_cal", conditions = "work_cal, income_cal, access_cal, educ_train_cal, crime_cal, housing_cal", incl.cut = 0.8, show.cases = T, n.cut = 3, exclude = CSAhealth)
+tthealth_csa
+```
+
+
+Also need pri cut - try 0.5 to start with
+
+```{r}
+tthealth_csa <- truthTable(health, outcome = "health_cal", conditions = "work_cal, income_cal, access_cal, educ_train_cal, crime_cal, housing_cal", incl.cut = 0.8, show.cases = T, pri.cut=0.5, exclude = CSAhealth, n.cut = 3)
+tthealth_csa
+```
+That leaves nothing except very high consistency and PRI rows
+
+deviant cases for coverage are 1   8  23  30  36  41  43  59  64  82  83  84  85  90 100 109 111 112 113 122 124 125 138 147 158 172 182 195 201 205
+
+
+
+
+```{r}
+dir_exp = "income_cal"
+intermedhealth <- minimize(tthealth_csa, details=TRUE, include="?", dir.exp=dir_exp)
+intermedhealth
+```
+
+M1 is possibly stronger
+
+```{r}
+cases_1 = intermedhealth$i.sol$C1P1$IC$options$cases[1]
+cases_2 = intermedhealth$i.sol$C1P1$IC$options$cases[2]
+cases_3 = intermedhealth$i.sol$C1P1$IC$options$cases[3]
+cases_4 = intermedhealth$i.sol$C1P1$IC$options$cases[4]
+cases_5 = intermedhealth$i.sol$C1P1$IC$options$cases[5]
+
+cases_1_n = as.numeric(unlist(strsplit(gsub(";", ",", cases_1), ",")))
+cases_2_n = as.numeric(unlist(strsplit(gsub(";", ",", cases_2), ",")))
+cases_3_n = as.numeric(unlist(strsplit(gsub(";", ",", cases_3), ",")))
+cases_4_n = as.numeric(unlist(strsplit(gsub(";", ",", cases_4), ",")))
+cases_5_n = as.numeric(unlist(strsplit(gsub(";", ",", cases_5), ",")))
+
+length(which(cases_1_n <=49))
+length(which(cases_1_n >49 & cases_1_n <=80))
+length(which(cases_1_n >80))
+
+length(which(cases_2_n <=49))
+length(which(cases_2_n >49 & cases_2_n <=80))
+length(which(cases_2_n >80))
+
+length(which(cases_3_n <=49))
+length(which(cases_3_n >49 & cases_3_n <=80))
+length(which(cases_3_n >80))
+
+length(which(cases_4_n <=49))
+length(which(cases_4_n >49 & cases_4_n <=80))
+length(which(cases_4_n >80))
+
+length(which(cases_5_n <=49))
+length(which(cases_5_n >49 & cases_5_n <=80))
+length(which(cases_5_n >80))
+
+
+
+```
+
+
+```{r}
+parshealth <- minimize(tthealth_csa, details=TRUE, include="?")
+parshealth
+```
+
+That's even simpler
+
+```{r}
+conshealth <- minimize(tthealth_csa, details=TRUE)
+conshealth
+```
+
+Looks like it is the same as intermediate?
+
+
+```{r}
+health_sol = admisc::compute(expression = "work_cal*income_cal*educ_train_cal + ~work_cal*~access_cal*educ_train_cal*~crime_cal +
+       ~work_cal*~income_cal*~access_cal*crime_cal*housing_cal +
+       work_cal*access_cal*educ_train_cal*~crime_cal*~housing_cal +
+       ~work_cal*~access_cal*educ_train_cal*housing_cal", data=health)
+
+numbers = seq(from=1, to=216, by=1)
+XYplot(health_sol, health$health_cal, clabels=numbers, pch=health$pch)
+
+
+```
+
+```{r}
+which(health_sol < 0.5 & health$health_cal > 0.5)
+length(which(health_sol < 0.5 & health$health_cal > 0.5))
+```
+20 cases deviant for coverage.
+
+```{r}
+which(health_sol > 0.5 & health$health_cal < 0.5)
+length(which(health_sol > 0.5 & health$health_cal < 0.5))
+```
+
+3 cases deviant for consistency
+
+
+```{r}
+# modelFit(parshealth, theory = "work_cal * income_cal * educ_train_cal")
+```
+
+
+What about the low set? 
+
+```{r}
+nhealth_low <- superSubset(health, outcome = "~health_cal", conditions = "work_cal, income_cal, access_cal, educ_train_cal, crime_cal, housing_cal", incl.cut=0.9, ron.cut = 0.6)
+nhealth_low
+```
+
+~income_cal+~educ_train_cal + ~crime_cal is best and includes ~educ_train_cal
+
+so reverse is income_cal * educ_train_cal * crime_cal
+
+```{r}
+tthealth_low <- truthTable(health, outcome = "~health_cal", conditions = "work_cal, income_cal, access_cal, educ_train_cal, crime_cal, housing_cal", incl.cut = 0.8, show.cases = T)
+tthealth_low
+```
+
+```{r}
+CSAhealth_low = findRows(expression="income_cal * educ_train_cal * crime_cal", obj=tthealth_low, type=c(1,2))
+CSAhealth_low
+```
+
+re-do truth table
+
+```{r}
+tthealth_low_csa <- truthTable(health, outcome = "~health_cal", conditions = "work_cal, income_cal, access_cal, educ_train_cal, crime_cal, housing_cal", incl.cut = 0.8, show.cases = T, exclude = CSAhealth_low)
+tthealth_low_csa
+```
+
+
+
+Use same n.cut as for other set
+
+```{r}
+tthealth_low_csa <- truthTable(health, outcome = "~health_cal", conditions = "work_cal, income_cal, access_cal, educ_train_cal, crime_cal, housing_cal", incl.cut = 0.8, show.cases = T, exclude = CSAhealth_low, n.cut = 3)
+tthealth_low_csa
+```
+
+
+Need for pri cut here. Try 0.5
+
+
+```{r}
+tthealth_low_csa <- truthTable(health, outcome = "~health_cal", conditions = "work_cal, income_cal, access_cal, educ_train_cal, crime_cal, housing_cal", incl.cut = 0.8, show.cases = T, exclude = CSAhealth_low, pri.cut = 0.5, n.cut = 3)
+tthealth_low_csa
+```
+
+row 13 remains interesting. Was not included in calculations for other set.
+
+cases deviant for consistency are 23  36  59  64  83  85  90 100 109 125 147
+
+Looks like further increase in pri is needed to deal with row 13 and its CSS
+
+```{r}
+tthealth_low_csa <- truthTable(health, outcome = "~health_cal", conditions = "work_cal, income_cal, access_cal, educ_train_cal, crime_cal, housing_cal", incl.cut = 0.8, show.cases = T, exclude = CSAhealth_low, pri.cut = 0.58, n.cut = 3)
+tthealth_low_csa
+```
+
+
+deviant cases are 59  64  83  90 100 109 125 147
+These look reasonable
+
+```{r}
+intermedhealth_low <- minimize(tthealth_low_csa, details=TRUE, include="?", dir.exp="~income_cal")
+intermedhealth_low
+```
+
+```{r}
+cases_1l = intermedhealth_low$i.sol$C1P1$IC$options$cases[1]
+cases_2l = intermedhealth_low$i.sol$C1P1$IC$options$cases[2]
+#cases_3l = intermedhealth_low$i.sol$C1P1$IC$options$cases[3]
+
+cases_1ln = as.numeric(unlist(strsplit(gsub(";", ",", cases_1l), ",")))
+cases_2ln = as.numeric(unlist(strsplit(gsub(";", ",", cases_2l), ",")))
+#cases_3ln = as.numeric(unlist(strsplit(gsub(";", ",", cases_3l), ",")))
+
+length(which(cases_1ln <=49))
+length(which(cases_1ln >49 & cases_1ln <=80))
+#length(which(cases_1ln >80))
+
+length(which(cases_2ln <=49))
+length(which(cases_2ln >49 & cases_2ln <=80))
+#length(which(cases_2ln >80))
+
+#length(which(cases_3ln <=49))
+#length(which(cases_3ln >49 & cases_3ln <=80))
+#length(which(cases_3ln >80))
+
+
+```
+
+
+
+
+```{r}
+# modelFit(intermedhealth_low, theory = "~income_cal")
+```
+
+```{r}
+parshealth_low <- minimize(tthealth_low_csa, details=TRUE, include="?")
+parshealth_low
+```
+Simpler again
+
+```{r}
+conshealth_low <- minimize(tthealth_low_csa, details=TRUE)
+conshealth_low
+```
+looks the same as intermediate - might have to rethink dir.exp? Very high consistency though!
+
+
+
+```{r}
+health_sol_low = admisc::compute("~income_cal*~educ_train_cal*~crime_cal*~housing_cal +
+       ~work_cal*~income_cal*~access_cal*~educ_train_cal*~crime_cal", data=health)
+
+numbers = seq(from=1, to=216, by=1)
+XYplot(health_sol_low, (1-health$health_cal), clabels=numbers, pch=health$pch)
+
+
+```
+
+```{r}
+which(health_sol_low > 0.5 & (1-health$health) < 0.5)
+length(which(health_sol_low > 0.5 & (1-health$health) < 0.5))
+```
+8 cases deviant for consistency (and then only just) very close to line
+
+```{r}
+which(health_sol_low < 0.5 & (1-health$health) > 0.5)
+length(which(health_sol_low < 0.5 & (1-health$health) > 0.5))
+```
+7 cases deviant for coverage - 10 is most extreme but even then close to horizontal line
+
+```{r}
+#modelFit(intermedhealth_low, theory = "~income_cal*~educ_train_cal*~crime_cal*~housing_cal")
+```
+
+Let's look at Glasgow data alone, but with Dundee and Aberdeen calibrations. We can then compare to the above as well.
+
+First, let's extract just the Glasgow data
+
+```{r}
+healthg = health[81:216,]
+```
+
+```{r}
+nhealthg <- superSubset(healthg, outcome = "health_cal", conditions = "work_cal, income_cal, access_cal, educ_train_cal, crime_cal, housing_cal", incl.cut=0.9, ron.cut = 0.6)
+nhealthg
+```
+
+income_cal + work_cal + educ_train_cal + crime_cal + access_cal
+
+can't include housing because of contradiction
+
+That's a lot of conditions!
+
+
+```{r}
+negate (income_cal + work_cal + educ_train_cal + crime_cal + access_cal, snames = "work_cal, income_cal, access_cal, educ_train_cal, crime_cal, housing_cal")
+```
+
+
+
+So need to exclude ~work_cal*~income_cal*~access_cal*~educ_train_cal*~crime_cal
+
+
+Aberdeen is 1-49
+Dundee is 50-80
+Glasgow is 81-216 - so much, much bigger
+
+```{r}
+tthealthg <- truthTable(healthg, outcome = "health_cal", conditions = "work_cal, income_cal, access_cal, educ_train_cal, crime_cal, housing_cal", incl.cut = 0.8, show.cases = T)
+tthealthg
+```
+pri cut needed here
+
+
+```{r}
+CSAhealthg = findRows(expression="~work_cal*~income_cal*~access_cal*~educ_train_cal*~crime_cal", obj=tthealthg, type=0)
+CSAhealthg
+```
+create tt without csas
+
+```{r}
+tthealth_csag <- truthTable(healthg, outcome = "health_cal", conditions = "work_cal, income_cal, access_cal, educ_train_cal, crime_cal, housing_cal", incl.cut = 0.8, show.cases = T, n.cut = 3, exclude = CSAhealthg)
+tthealth_csag
+
+```
+
+use income as dir-exp as still most theoretically likely
+
+```{r}
+dir_exp = "income_cal"
+intermedhealthg <- minimize(tthealth_csag, details=TRUE, include="?", dir.exp=dir_exp)
+intermedhealthg
+```
+
+highly consistent solution, but coverage a bit lower than ideal
+
+
+
+
+```{r}
+parshealthg <- minimize(tthealth_csag, details=TRUE, include="?")
+parshealthg
+```
+
+That's pretty simple in contrast
+
+
+```{r}
+conshealthg <- minimize(tthealth_csag, details=TRUE)
+conshealthg
+```
+
+Looks like it is the same as intermediate?
+
+
+```{r}
+health_solg = admisc::compute(expression = "work_cal*income_cal*educ_train_cal*~crime_cal + work_cal*income_cal*educ_train_cal*housing_cal +
+       income_cal*~access_cal*educ_train_cal*housing_cal", data=healthg)
+
+numbers = seq(from=1, to=136, by=1)
+XYplot(health_solg, healthg$health_cal, clabels=numbers, pch=healthg$pch)
+
+
+```
+
+```{r}
+which(health_solg < 0.5 & healthg$health_cal > 0.5)
+length(which(health_solg < 0.5 & healthg$health_cal > 0.5))
+```
+23 cases deviant for coverage
+
+```{r}
+which(health_solg > 0.5 & healthg$health_cal < 0.5)
+```
+
+0 cases deviant for consistency
+
+
+```{r}
+# modelFit(intermedhealth, theory = "income_cal")
+```
+
+```{r}
+# modelFit(parshealth, theory = "work_cal * income_cal * educ_train_cal")
+```
+
+
+```{r}
+cor.test(healthg$health_cal, healthg$crime_cal)
+```
+
+Fairly high, so might expect some similar patterns if use crime instead 
+
+What about the low set? 
+
+```{r}
+nhealth_lowg <- superSubset(healthg, outcome = "~health_cal", conditions = "work_cal, income_cal, access_cal, educ_train_cal, crime_cal, housing_cal", incl.cut=0.9, ron.cut = 0.6)
+nhealth_lowg
+```
+
+~educ_train_cal + ~income_cal + ~housing_cal
+
+So reverse is educ_train_cal * income_cal * housing_cal
+
+```{r}
+tthealth_lowg <- truthTable(healthg, outcome = "~health_cal", conditions = "work_cal, income_cal, access_cal, educ_train_cal, crime_cal, housing_cal", incl.cut = 0.8, show.cases = T)
+tthealth_lowg
+```
+pri.cut clearly needed here
+
+```{r}
+CSAhealth_lowg = findRows(expression="educ_train_cal * income_cal * housing_cal", obj=tthealth_lowg, type=0)
+CSAhealth_lowg
+```
+
+re-do truth table
+
+```{r}
+tthealth_low_csag <- truthTable(healthg, outcome = "~health_cal", conditions = "work_cal, income_cal, access_cal, educ_train_cal, crime_cal, housing_cal", incl.cut = 0.8, show.cases = T, n.cut = 3, exclude = CSAhealth_lowg)
+tthealth_low_csag
+```
+
+
+```{r}
+intermedhealth_lowg <- minimize(tthealth_low_csag, details=TRUE, include="?", dir.exp="~income_cal")
+intermedhealth_lowg
+```
+
+Okay.
+
+
+
+
+```{r}
+# modelFit(intermedhealth_low, theory = "~income_cal")
+```
+
+```{r}
+parshealth_lowg <- minimize(tthealth_low_csag, details=TRUE, include="?")
+parshealth_lowg
+```
+Much simpler again
+
+```{r}
+conshealth_lowg <- minimize(tthealth_low_csag, details=TRUE)
+conshealth_lowg
+```
+looks the same as intermediate - might have to rethink dir.exp? 
+
+
+
+```{r}
+health_sol_lowg = admisc::compute("~work_cal*~income_cal*~access_cal*~educ_train_cal*~crime_cal + ~work_cal*~income_cal*~educ_train_cal*~crime_cal*~housing_cal", data=healthg)
+
+numbers = seq(from=1, to=136, by=1)
+XYplot(health_sol_lowg, (1-healthg$health_cal), clabels=numbers, pch=healthg$pch)
+
+
+```
+
+```{r}
+which(health_sol_lowg > 0.5 & (1-healthg$health) < 0.5)
+length(which(health_sol_lowg > 0.5 & (1-healthg$health) < 0.5))
+```
+5 cases deviant for consistency
+
+```{r}
+which(health_sol_lowg < 0.5 & (1-healthg$health) > 0.5)
+length(which(health_sol_lowg < 0.5 & (1-healthg$health) > 0.5))
+```
+3 cases deviant for coverage
+
+```{r}
+# modelFit(intermedhealth_low, theory = "~income_cal")
+```
+
