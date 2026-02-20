@@ -5,6 +5,10 @@ This repository contains the reproducible analytical workflow and supplementary 
 Laskawy, K. & Greener, I (2026).
 Fuzzy-set Qualitative Comparative Analysis in Public Health: An illustrative application to social determinants of health in Dundee, Aberdeen, and Glasgow.
 
+All analysis code in this repository was developed by Professor Ian Greener. The code constitutes his intellectual property and is shared here solely to support transparency, reproducibility, and methodological learning in connection with the accompanying publication.
+Use, adaptation, or redistribution of the code for purposes beyond personal research or teaching should not occur without prior permission from Professor Greener.
+For questions regarding reuse or licensing, please contact Professor Ian Greener.
+
 The repository is designed as a resource for researchers interested in applying fuzzy-set Qualitative Comparative Analysis (fsQCA) to public health and health policy data. It demonstrates how routinely available deprivation and health indicators can be transformed into calibrated fuzzy sets and analysed using set-theoretic logic to identify necessary conditions and multiple sufficient configurational pathways.
 
 Repository contents
@@ -13,7 +17,7 @@ Repository contents
 End-to-end R Markdown script that performs data preparation, calibration, fsQCA, and generation of all results reported in the manuscript and Online Supplement.
 
 expanded_data.csv
-Extended analytic dataset produced by the workflow and used for fsQCA.
+Extended dataset produced by the workflow and used for fsQCA.
 
 What the workflow does
 
