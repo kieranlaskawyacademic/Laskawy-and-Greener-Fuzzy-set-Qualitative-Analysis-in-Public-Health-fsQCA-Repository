@@ -11,13 +11,18 @@ For questions regarding reuse or licensing, please contact Professor Ian Greener
 
 The repository is designed as a resource for researchers interested in applying fuzzy-set Qualitative Comparative Analysis (fsQCA) to public health and health policy data. It demonstrates how routinely available deprivation and health indicators can be transformed into calibrated fuzzy sets and analysed using set-theoretic logic to identify necessary conditions and multiple sufficient configurational pathways.
 
-Repository contents
+
+
+Repository contents:
 
 3_cities.Rmd
 End-to-end R Markdown script that performs data preparation, calibration, fsQCA, and generation of all results reported in the manuscript and Online Supplement.
 
 expanded_data.csv
 Extended dataset produced by the workflow and used for fsQCA.
+
+
+
 
 What the workflow does
 
@@ -67,6 +72,8 @@ Perform minimisation and generate intermediate fsQCA solutions.
 
 The outputs correspond to Tables 1–4 and Figure 1 in the manuscript and supplementary material.
 
+
+
 Software requirements
 
 R (≥ 4.0 recommended)
@@ -89,6 +96,8 @@ cluster
 
 (Exact package calls are contained in 3_cities.Rmd.)
 
+
+
 How to run
 
 Clone or download the repository.
@@ -106,6 +115,8 @@ Reproducibility notes
 The code was developed and tested using the authors’ native RStudio environments. Differences in R or package versions may lead to warnings or minor compatibility issues. If problems arise, please open an issue in the repository or contact the lead author.
 
 Underlying SIMD data are publicly available from the Scottish Government. This repository provides the processing pipeline and derived analytic dataset to facilitate replication.
+
+
 
 Intended use
 
